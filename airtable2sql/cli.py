@@ -61,6 +61,11 @@ def export_base_to_sqlite(base_id, base_name, output_dir, token):
         table_obj = api.table(base_id, table_id)
         df = airtable_to_df(table_obj)
 
+        # Skip empty tables (no columns) to avoid SQL syntax errors
+        if df.empty or len(df.columns) == 0:
+            print(f"    ⚠️  Skipped (empty table)")
+            continue
+
         df.to_sql(table_name, engine, if_exists='replace', index=False)
         print(f"    💾 Saved")
 
